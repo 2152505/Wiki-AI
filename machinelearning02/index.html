@@ -1,0 +1,2283 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../varinfer/">
+      
+      
+        <link rel="next" href="../ml4/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>LDA原理 - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lda" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LDA原理
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    共产党宣言
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    人工智能论文
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            人工智能论文
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    课程总结
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AI/moni/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    模拟教室突然安静
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    两种拟合方式
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            两种拟合方式
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AI/near/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    拉格朗日插值公式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AI/near2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    牛顿插值公式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AI/Phyia/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pythia:A Suite for Analyzing Large Language Models Across Training and Scalin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    基础操作汇总
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            基础操作汇总
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    好用的工具
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pandoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pandoc使用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python多行注释
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../super/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    super函数解析
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    linux 学习
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            linux 学习
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    文件目录
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux_power/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux权限管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux_net/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux网络学习
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux_user/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux用户管理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    ai学习
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            ai学习
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ngrok/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ngrok内网穿透
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    树莓pi
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            树莓pi
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    设置网络
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi_2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ssh链接树莓pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi_3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vnc可视化服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi_4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    改变树莓pi默认账户
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi_5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux相关命令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi_6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    树莓服务器cpolar
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pi_7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    相关总结
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    mnist
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            mnist
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mnist_torch_nn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mnist torch.nn
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mnist_data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mnist model
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demo_code/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    示例代码
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    机器学习
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            机器学习
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4_1" id="__nav_5_4_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    入门基础
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            入门基础
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ml5/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    感知机
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ml6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    激活函数
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reforcast/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    误差反向传播
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SGD/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SGD与Momentum
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../machinelearning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    课程评分
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    机器学习概率视角
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../varinfer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    变分推理
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    LDA原理
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    LDA原理
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lda" class="md-nav__link">
+    <span class="md-ellipsis">
+      LDA算法的优点：
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      另一篇文章：
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      实际案例分析：
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="实际案例分析：">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iris" class="md-nav__link">
+    <span class="md-ellipsis">
+      上面是iris具体的数据格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ytarget" class="md-nav__link">
+    <span class="md-ellipsis">
+      这句话的作用是提取出所有的类别标签，y由于对应的是target变量，也就是分类的目标。
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      X.shape最终返回的是:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ml4/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    支持向量机SVM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ml7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Others
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4_8" id="__nav_5_4_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    GNN
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4_8">
+            <span class="md-nav__icon md-icon"></span>
+            GNN
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GNN/GNN1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    图神经网络基础知识
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GNN/GNN2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    用networkX可视化图
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GNN/GNN3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    理解图神经网络和信息传递机制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    图像处理和机器视觉
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            图像处理和机器视觉
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CV/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    配置环境
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eigen/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Eigen学习
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SVD/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    高等代数基础SVD分解
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML/oppAlg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    对极几何
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML/EightPoint/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    八点法计算基本矩阵
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML/Matirx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    由本质矩阵回复相机运动
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ML/Tranigle/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    点的三角化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CV2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    实际操作
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    SQL学习
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            SQL学习
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLhm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SQLhm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    脑科学导论
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            脑科学导论
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lesson01/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    lesson01
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lda" class="md-nav__link">
+    <span class="md-ellipsis">
+      LDA算法的优点：
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      另一篇文章：
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      实际案例分析：
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="实际案例分析：">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iris" class="md-nav__link">
+    <span class="md-ellipsis">
+      上面是iris具体的数据格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ytarget" class="md-nav__link">
+    <span class="md-ellipsis">
+      这句话的作用是提取出所有的类别标签，y由于对应的是target变量，也就是分类的目标。
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xshape" class="md-nav__link">
+    <span class="md-ellipsis">
+      X.shape最终返回的是:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>LDA原理</h1>
+
+<p>线性判别分析LDA(Linear Discriminant Analysis)又称为Fisher线性判别，是一种监督学习的降维技术，也就是说它的数据集的每个样本都是有类别输出的，这点与PCA（无监督学习）不同。LDA在模式识别领域（比如人脸识别，舰艇识别等图形图像识别领域）中有非常广泛的应用，因此我们有必要了解下它的算法原理。<br/></p>
+<ol>
+<li>LDA的思想
+LDA的思想是：最大化类间均值，最小化类内方差 。意思就是将数据投影在低维度上，并且投影后同种类别数据的投影点尽可能的接近，不同类别数据的投影点的中心点尽可能的远。<br/>
+我们先看看最简单的情况。假设我们有两类数据 分别为红色和蓝色，如下图所示，这些数据特征是二维的，我们希望将这些数据投影到一维的一条直线，让每一种类别数据的投影点尽可能的接近，而红色和蓝色数据中心之间的距离尽可能的大。<br/></li>
+</ol>
+<p><img alt="ml" src="../images/melearn.png" />
+<img alt="ml" src="../images/rq.png" />
+<img alt="ml" src="../images/rq2.png" /></p>
+<p><img alt="lda" src="../images/lda1.png" />
+<img alt="lda" src="../images/lda2.png" />
+<img alt="lda" src="../images/lda3.png" />
+<img alt="lda" src="../images/lda4.png" />
+<img alt="lda" src="../images/lda6.png" />
+<img alt="lda" src="../images/lda7.png" />
+<img alt="lda" src="../images/lda8.png" />
+<img alt="lda" src="../images/lda9.png" />
+<img alt="lda" src="../images/lda10.png" />
+<img alt="lda" src="../images/lda11.png" />
+5. LDA算法小结
+LDA算法既可以用来降维，也可以用来分来，但是目前来说，LDA主要用于降维，在进行与图像识别相关的数据分析时，LDA是一个有力的工具。下面总结一下LDA算法的优缺点。<br/></p>
+<h3 id="lda">LDA算法的优点：</h3>
+<p>在降维过程中可以使用类别的先验知识经验，而像PCA这样的无监督学习无法使用先验知识；<br/>
+LDA在样本分类信息依赖均值而不是方差的时候，比PCA算法较优。<br/>
+LDA算法的缺点：<br/>
+LDA与PCA均不适合对非高斯分布样本进行降维<br/>
+LDA降维算法最多降到类别数K-1的维度，当降维的维度大于K-1时，则不能使用LDA。当然目前有一些改进的LDA算法可以绕过这个问题<br/>
+LDA在样本分类信息依赖方差而非均值的时候，降维效果不好<br/>
+LDA可能过度拟合数据<br/></p>
+<h3 id="_1">另一篇文章：</h3>
+<p><img alt="lda" src="../images/ldas1.png" /><br/>
+正如该图中展示的那样，LDA需要寻找一条合适的直线y = w T x y=w^Txy=wTx，使得数据集中的样例投影到该直线时同类样例的投影点尽可能接近，不同类样例的投影点尽可能远离，这样一来就可以对新样例进行分类了，具体做法同样是先将新样例投影到该直线上，然后根据投影点的位置来判断样本的类别。但是实际上LDA用于分类的情况并不是特别常见，其更常见的用法是用来进行高维数据的降维，但是本文还是对LDA分类进行了尝试。<br/>
+ <img alt="lda" src="../images/ldas2.png" /><br/>
+ <img alt="lda" src="../images/ldas3.png" /><br/>
+ <img alt="lda" src="../images/ldas6.png" /><br/>
+ <img alt="lda" src="../images/ldas7.png" /><br/>
+ <img alt="ldas" src="../images/ldas8.png" /><br/></p>
+<h3 id="_2">实际案例分析：</h3>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>import numpy as np
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>def lda(X, y, num_components):
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    # Class labels
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    classes = np.unique(y)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    # Number of samples and features
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    num_samples, num_features = X.shape
+</code></pre></div>
+这里面x是iris.data，y是iris.target，这是鸢尾花数据集的一个对象，具体说明如下：<br/>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{&#39;data&#39;: array([[5.1, 3.5, 1.4, 0.2],
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>        [4.9, 3. , 1.4, 0.2],
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        [4.7, 3.2, 1.3, 0.2],
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        [4.6, 3.1, 1.5, 0.2],
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        [5. , 3.6, 1.4, 0.2],
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        [5.4, 3.9, 1.7, 0.4],
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        [4.6, 3.4, 1.4, 0.3],
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        [5. , 3.4, 1.5, 0.2],
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        [4.4, 2.9, 1.4, 0.2],
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        [4.9, 3.1, 1.5, 0.1],
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        [5.4, 3.7, 1.5, 0.2],
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        [4.8, 3.4, 1.6, 0.2],
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        [4.8, 3. , 1.4, 0.1],
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        [4.3, 3. , 1.1, 0.1],
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        [5.8, 4. , 1.2, 0.2],
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        [5.7, 4.4, 1.5, 0.4],
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        [5.4, 3.9, 1.3, 0.4],
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        [5.1, 3.5, 1.4, 0.3],
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        [5.7, 3.8, 1.7, 0.3],
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        [5.1, 3.8, 1.5, 0.3],
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        [5.4, 3.4, 1.7, 0.2],
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        [5.1, 3.7, 1.5, 0.4],
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>        [4.6, 3.6, 1. , 0.2],
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        [5.1, 3.3, 1.7, 0.5],
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>        [4.8, 3.4, 1.9, 0.2],
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>        [5. , 3. , 1.6, 0.2],
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        [5. , 3.4, 1.6, 0.4],
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>        [5.2, 3.5, 1.5, 0.2],
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        [5.2, 3.4, 1.4, 0.2],
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>        [4.7, 3.2, 1.6, 0.2],
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>        [4.8, 3.1, 1.6, 0.2],
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>        [5.4, 3.4, 1.5, 0.4],
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>        [5.2, 4.1, 1.5, 0.1],
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>        [5.5, 4.2, 1.4, 0.2],
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>        [4.9, 3.1, 1.5, 0.2],
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>        [5. , 3.2, 1.2, 0.2],
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>        [5.5, 3.5, 1.3, 0.2],
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>        [4.9, 3.6, 1.4, 0.1],
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>        [4.4, 3. , 1.3, 0.2],
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>        [5.1, 3.4, 1.5, 0.2],
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>        [5. , 3.5, 1.3, 0.3],
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>        [4.5, 2.3, 1.3, 0.3],
+<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>        [4.4, 3.2, 1.3, 0.2],
+<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>        [5. , 3.5, 1.6, 0.6],
+<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>        [5.1, 3.8, 1.9, 0.4],
+<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>        [4.8, 3. , 1.4, 0.3],
+<a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>        [5.1, 3.8, 1.6, 0.2],
+<a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>        [4.6, 3.2, 1.4, 0.2],
+<a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>        [5.3, 3.7, 1.5, 0.2],
+<a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a>        [5. , 3.3, 1.4, 0.2],
+<a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>        [7. , 3.2, 4.7, 1.4],
+<a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>        [6.4, 3.2, 4.5, 1.5],
+<a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a>        [6.9, 3.1, 4.9, 1.5],
+<a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a>        [5.5, 2.3, 4. , 1.3],
+<a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a>        [6.5, 2.8, 4.6, 1.5],
+<a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>        [5.7, 2.8, 4.5, 1.3],
+<a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a>        [6.3, 3.3, 4.7, 1.6],
+<a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a>        [4.9, 2.4, 3.3, 1. ],
+<a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a>        [6.6, 2.9, 4.6, 1.3],
+<a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a>        [5.2, 2.7, 3.9, 1.4],
+<a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a>        [5. , 2. , 3.5, 1. ],
+<a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a>        [5.9, 3. , 4.2, 1.5],
+<a id="__codelineno-1-63" name="__codelineno-1-63" href="#__codelineno-1-63"></a>        [6. , 2.2, 4. , 1. ],
+<a id="__codelineno-1-64" name="__codelineno-1-64" href="#__codelineno-1-64"></a>        [6.1, 2.9, 4.7, 1.4],
+<a id="__codelineno-1-65" name="__codelineno-1-65" href="#__codelineno-1-65"></a>        [5.6, 2.9, 3.6, 1.3],
+<a id="__codelineno-1-66" name="__codelineno-1-66" href="#__codelineno-1-66"></a>        [6.7, 3.1, 4.4, 1.4],
+<a id="__codelineno-1-67" name="__codelineno-1-67" href="#__codelineno-1-67"></a>        [5.6, 3. , 4.5, 1.5],
+<a id="__codelineno-1-68" name="__codelineno-1-68" href="#__codelineno-1-68"></a>        [5.8, 2.7, 4.1, 1. ],
+<a id="__codelineno-1-69" name="__codelineno-1-69" href="#__codelineno-1-69"></a>        [6.2, 2.2, 4.5, 1.5],
+<a id="__codelineno-1-70" name="__codelineno-1-70" href="#__codelineno-1-70"></a>        [5.6, 2.5, 3.9, 1.1],
+<a id="__codelineno-1-71" name="__codelineno-1-71" href="#__codelineno-1-71"></a>        [5.9, 3.2, 4.8, 1.8],
+<a id="__codelineno-1-72" name="__codelineno-1-72" href="#__codelineno-1-72"></a>        [6.1, 2.8, 4. , 1.3],
+<a id="__codelineno-1-73" name="__codelineno-1-73" href="#__codelineno-1-73"></a>        [6.3, 2.5, 4.9, 1.5],
+<a id="__codelineno-1-74" name="__codelineno-1-74" href="#__codelineno-1-74"></a>        [6.1, 2.8, 4.7, 1.2],
+<a id="__codelineno-1-75" name="__codelineno-1-75" href="#__codelineno-1-75"></a>        [6.4, 2.9, 4.3, 1.3],
+<a id="__codelineno-1-76" name="__codelineno-1-76" href="#__codelineno-1-76"></a>        [6.6, 3. , 4.4, 1.4],
+<a id="__codelineno-1-77" name="__codelineno-1-77" href="#__codelineno-1-77"></a>        [6.8, 2.8, 4.8, 1.4],
+<a id="__codelineno-1-78" name="__codelineno-1-78" href="#__codelineno-1-78"></a>        [6.7, 3. , 5. , 1.7],
+<a id="__codelineno-1-79" name="__codelineno-1-79" href="#__codelineno-1-79"></a>        [6. , 2.9, 4.5, 1.5],
+<a id="__codelineno-1-80" name="__codelineno-1-80" href="#__codelineno-1-80"></a>        [5.7, 2.6, 3.5, 1. ],
+<a id="__codelineno-1-81" name="__codelineno-1-81" href="#__codelineno-1-81"></a>        [5.5, 2.4, 3.8, 1.1],
+<a id="__codelineno-1-82" name="__codelineno-1-82" href="#__codelineno-1-82"></a>        [5.5, 2.4, 3.7, 1. ],
+<a id="__codelineno-1-83" name="__codelineno-1-83" href="#__codelineno-1-83"></a>        [5.8, 2.7, 3.9, 1.2],
+<a id="__codelineno-1-84" name="__codelineno-1-84" href="#__codelineno-1-84"></a>        [6. , 2.7, 5.1, 1.6],
+<a id="__codelineno-1-85" name="__codelineno-1-85" href="#__codelineno-1-85"></a>        [5.4, 3. , 4.5, 1.5],
+<a id="__codelineno-1-86" name="__codelineno-1-86" href="#__codelineno-1-86"></a>        [6. , 3.4, 4.5, 1.6],
+<a id="__codelineno-1-87" name="__codelineno-1-87" href="#__codelineno-1-87"></a>        [6.7, 3.1, 4.7, 1.5],
+<a id="__codelineno-1-88" name="__codelineno-1-88" href="#__codelineno-1-88"></a>        [6.3, 2.3, 4.4, 1.3],
+<a id="__codelineno-1-89" name="__codelineno-1-89" href="#__codelineno-1-89"></a>        [5.6, 3. , 4.1, 1.3],
+<a id="__codelineno-1-90" name="__codelineno-1-90" href="#__codelineno-1-90"></a>        [5.5, 2.5, 4. , 1.3],
+<a id="__codelineno-1-91" name="__codelineno-1-91" href="#__codelineno-1-91"></a>        [5.5, 2.6, 4.4, 1.2],
+<a id="__codelineno-1-92" name="__codelineno-1-92" href="#__codelineno-1-92"></a>        [6.1, 3. , 4.6, 1.4],
+<a id="__codelineno-1-93" name="__codelineno-1-93" href="#__codelineno-1-93"></a>        [5.8, 2.6, 4. , 1.2],
+<a id="__codelineno-1-94" name="__codelineno-1-94" href="#__codelineno-1-94"></a>        [5. , 2.3, 3.3, 1. ],
+<a id="__codelineno-1-95" name="__codelineno-1-95" href="#__codelineno-1-95"></a>        [5.6, 2.7, 4.2, 1.3],
+<a id="__codelineno-1-96" name="__codelineno-1-96" href="#__codelineno-1-96"></a>        [5.7, 3. , 4.2, 1.2],
+<a id="__codelineno-1-97" name="__codelineno-1-97" href="#__codelineno-1-97"></a>        [5.7, 2.9, 4.2, 1.3],
+<a id="__codelineno-1-98" name="__codelineno-1-98" href="#__codelineno-1-98"></a>        [6.2, 2.9, 4.3, 1.3],
+<a id="__codelineno-1-99" name="__codelineno-1-99" href="#__codelineno-1-99"></a>        [5.1, 2.5, 3. , 1.1],
+<a id="__codelineno-1-100" name="__codelineno-1-100" href="#__codelineno-1-100"></a>        [5.7, 2.8, 4.1, 1.3],
+<a id="__codelineno-1-101" name="__codelineno-1-101" href="#__codelineno-1-101"></a>        [6.3, 3.3, 6. , 2.5],
+<a id="__codelineno-1-102" name="__codelineno-1-102" href="#__codelineno-1-102"></a>        [5.8, 2.7, 5.1, 1.9],
+<a id="__codelineno-1-103" name="__codelineno-1-103" href="#__codelineno-1-103"></a>        [7.1, 3. , 5.9, 2.1],
+<a id="__codelineno-1-104" name="__codelineno-1-104" href="#__codelineno-1-104"></a>        [6.3, 2.9, 5.6, 1.8],
+<a id="__codelineno-1-105" name="__codelineno-1-105" href="#__codelineno-1-105"></a>        [6.5, 3. , 5.8, 2.2],
+<a id="__codelineno-1-106" name="__codelineno-1-106" href="#__codelineno-1-106"></a>        [7.6, 3. , 6.6, 2.1],
+<a id="__codelineno-1-107" name="__codelineno-1-107" href="#__codelineno-1-107"></a>        [4.9, 2.5, 4.5, 1.7],
+<a id="__codelineno-1-108" name="__codelineno-1-108" href="#__codelineno-1-108"></a>        [7.3, 2.9, 6.3, 1.8],
+<a id="__codelineno-1-109" name="__codelineno-1-109" href="#__codelineno-1-109"></a>        [6.7, 2.5, 5.8, 1.8],
+<a id="__codelineno-1-110" name="__codelineno-1-110" href="#__codelineno-1-110"></a>        [7.2, 3.6, 6.1, 2.5],
+<a id="__codelineno-1-111" name="__codelineno-1-111" href="#__codelineno-1-111"></a>        [6.5, 3.2, 5.1, 2. ],
+<a id="__codelineno-1-112" name="__codelineno-1-112" href="#__codelineno-1-112"></a>        [6.4, 2.7, 5.3, 1.9],
+<a id="__codelineno-1-113" name="__codelineno-1-113" href="#__codelineno-1-113"></a>        [6.8, 3. , 5.5, 2.1],
+<a id="__codelineno-1-114" name="__codelineno-1-114" href="#__codelineno-1-114"></a>        [5.7, 2.5, 5. , 2. ],
+<a id="__codelineno-1-115" name="__codelineno-1-115" href="#__codelineno-1-115"></a>        [5.8, 2.8, 5.1, 2.4],
+<a id="__codelineno-1-116" name="__codelineno-1-116" href="#__codelineno-1-116"></a>        [6.4, 3.2, 5.3, 2.3],
+<a id="__codelineno-1-117" name="__codelineno-1-117" href="#__codelineno-1-117"></a>        [6.5, 3. , 5.5, 1.8],
+<a id="__codelineno-1-118" name="__codelineno-1-118" href="#__codelineno-1-118"></a>        [7.7, 3.8, 6.7, 2.2],
+<a id="__codelineno-1-119" name="__codelineno-1-119" href="#__codelineno-1-119"></a>        [7.7, 2.6, 6.9, 2.3],
+<a id="__codelineno-1-120" name="__codelineno-1-120" href="#__codelineno-1-120"></a>        [6. , 2.2, 5. , 1.5],
+<a id="__codelineno-1-121" name="__codelineno-1-121" href="#__codelineno-1-121"></a>        [6.9, 3.2, 5.7, 2.3],
+<a id="__codelineno-1-122" name="__codelineno-1-122" href="#__codelineno-1-122"></a>        [5.6, 2.8, 4.9, 2. ],
+<a id="__codelineno-1-123" name="__codelineno-1-123" href="#__codelineno-1-123"></a>        [7.7, 2.8, 6.7, 2. ],
+<a id="__codelineno-1-124" name="__codelineno-1-124" href="#__codelineno-1-124"></a>        [6.3, 2.7, 4.9, 1.8],
+<a id="__codelineno-1-125" name="__codelineno-1-125" href="#__codelineno-1-125"></a>        [6.7, 3.3, 5.7, 2.1],
+<a id="__codelineno-1-126" name="__codelineno-1-126" href="#__codelineno-1-126"></a>        [7.2, 3.2, 6. , 1.8],
+<a id="__codelineno-1-127" name="__codelineno-1-127" href="#__codelineno-1-127"></a>        [6.2, 2.8, 4.8, 1.8],
+<a id="__codelineno-1-128" name="__codelineno-1-128" href="#__codelineno-1-128"></a>        [6.1, 3. , 4.9, 1.8],
+<a id="__codelineno-1-129" name="__codelineno-1-129" href="#__codelineno-1-129"></a>        [6.4, 2.8, 5.6, 2.1],
+<a id="__codelineno-1-130" name="__codelineno-1-130" href="#__codelineno-1-130"></a>        [7.2, 3. , 5.8, 1.6],
+<a id="__codelineno-1-131" name="__codelineno-1-131" href="#__codelineno-1-131"></a>        [7.4, 2.8, 6.1, 1.9],
+<a id="__codelineno-1-132" name="__codelineno-1-132" href="#__codelineno-1-132"></a>        [7.9, 3.8, 6.4, 2. ],
+<a id="__codelineno-1-133" name="__codelineno-1-133" href="#__codelineno-1-133"></a>        [6.4, 2.8, 5.6, 2.2],
+<a id="__codelineno-1-134" name="__codelineno-1-134" href="#__codelineno-1-134"></a>        [6.3, 2.8, 5.1, 1.5],
+<a id="__codelineno-1-135" name="__codelineno-1-135" href="#__codelineno-1-135"></a>        [6.1, 2.6, 5.6, 1.4],
+<a id="__codelineno-1-136" name="__codelineno-1-136" href="#__codelineno-1-136"></a>        [7.7, 3. , 6.1, 2.3],
+<a id="__codelineno-1-137" name="__codelineno-1-137" href="#__codelineno-1-137"></a>        [6.3, 3.4, 5.6, 2.4],
+<a id="__codelineno-1-138" name="__codelineno-1-138" href="#__codelineno-1-138"></a>        [6.4, 3.1, 5.5, 1.8],
+<a id="__codelineno-1-139" name="__codelineno-1-139" href="#__codelineno-1-139"></a>        [6. , 3. , 4.8, 1.8],
+<a id="__codelineno-1-140" name="__codelineno-1-140" href="#__codelineno-1-140"></a>        [6.9, 3.1, 5.4, 2.1],
+<a id="__codelineno-1-141" name="__codelineno-1-141" href="#__codelineno-1-141"></a>        [6.7, 3.1, 5.6, 2.4],
+<a id="__codelineno-1-142" name="__codelineno-1-142" href="#__codelineno-1-142"></a>        [6.9, 3.1, 5.1, 2.3],
+<a id="__codelineno-1-143" name="__codelineno-1-143" href="#__codelineno-1-143"></a>        [5.8, 2.7, 5.1, 1.9],
+<a id="__codelineno-1-144" name="__codelineno-1-144" href="#__codelineno-1-144"></a>        [6.8, 3.2, 5.9, 2.3],
+<a id="__codelineno-1-145" name="__codelineno-1-145" href="#__codelineno-1-145"></a>        [6.7, 3.3, 5.7, 2.5],
+<a id="__codelineno-1-146" name="__codelineno-1-146" href="#__codelineno-1-146"></a>        [6.7, 3. , 5.2, 2.3],
+<a id="__codelineno-1-147" name="__codelineno-1-147" href="#__codelineno-1-147"></a>        [6.3, 2.5, 5. , 1.9],
+<a id="__codelineno-1-148" name="__codelineno-1-148" href="#__codelineno-1-148"></a>        [6.5, 3. , 5.2, 2. ],
+<a id="__codelineno-1-149" name="__codelineno-1-149" href="#__codelineno-1-149"></a>        [6.2, 3.4, 5.4, 2.3],
+<a id="__codelineno-1-150" name="__codelineno-1-150" href="#__codelineno-1-150"></a>        [5.9, 3. , 5.1, 1.8]]),
+<a id="__codelineno-1-151" name="__codelineno-1-151" href="#__codelineno-1-151"></a> &#39;target&#39;: array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+<a id="__codelineno-1-152" name="__codelineno-1-152" href="#__codelineno-1-152"></a>        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+<a id="__codelineno-1-153" name="__codelineno-1-153" href="#__codelineno-1-153"></a>        0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+<a id="__codelineno-1-154" name="__codelineno-1-154" href="#__codelineno-1-154"></a>        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+<a id="__codelineno-1-155" name="__codelineno-1-155" href="#__codelineno-1-155"></a>        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+<a id="__codelineno-1-156" name="__codelineno-1-156" href="#__codelineno-1-156"></a>        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+<a id="__codelineno-1-157" name="__codelineno-1-157" href="#__codelineno-1-157"></a>        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]),
+<a id="__codelineno-1-158" name="__codelineno-1-158" href="#__codelineno-1-158"></a> &#39;frame&#39;: None,
+<a id="__codelineno-1-159" name="__codelineno-1-159" href="#__codelineno-1-159"></a> &#39;target_names&#39;: array([&#39;setosa&#39;, &#39;versicolor&#39;, &#39;virginica&#39;], dtype=&#39;&lt;U10&#39;),
+<a id="__codelineno-1-160" name="__codelineno-1-160" href="#__codelineno-1-160"></a> &#39;DESCR&#39;: &#39;.. _iris_dataset:\n\nIris plants dataset\n--------------------\n\n**Data Set Characteristics:**\n\n    :Number of Instances: 150 (50 in each of three classes)\n    :Number of Attributes: 4 numeric, predictive attributes and the class\n    :Attribute Information:\n        - sepal length in cm\n        - sepal width in cm\n        - petal length in cm\n        - petal width in cm\n        - class:\n                - Iris-Setosa\n                - Iris-Versicolour\n                - Iris-Virginica\n                \n    :Summary Statistics:\n\n    ============== ==== ==== ======= ===== ====================\n                    Min  Max   Mean    SD   Class Correlation\n    ============== ==== ==== ======= ===== ====================\n    sepal length:   4.3  7.9   5.84   0.83    0.7826\n    sepal width:    2.0  4.4   3.05   0.43   -0.4194\n    petal length:   1.0  6.9   3.76   1.76    0.9490  (high!)\n    petal width:    0.1  2.5   1.20   0.76    0.9565  (high!)\n    ============== ==== ==== ======= ===== ====================\n\n    :Missing Attribute Values: None\n    :Class Distribution: 33.3% for each of 3 classes.\n    :Creator: R.A. Fisher\n    :Donor: Michael Marshall (MARSHALL%PLU@io.arc.nasa.gov)\n    :Date: July, 1988\n\nThe famous Iris database, first used by Sir R.A. Fisher. The dataset is taken\nfrom Fisher\&#39;s paper. Note that it\&#39;s the same as in R, but not as in the UCI\nMachine Learning Repository, which has two wrong data points.\n\nThis is perhaps the best known database to be found in the\npattern recognition literature.  Fisher\&#39;s paper is a classic in the field and\nis referenced frequently to this day.  (See Duda &amp; Hart, for example.)  The\ndata set contains 3 classes of 50 instances each, where each class refers to a\ntype of iris plant.  One class is linearly separable from the other 2; the\nlatter are NOT linearly separable from each other.\n\n.. topic:: References\n\n   - Fisher, R.A. &quot;The use of multiple measurements in taxonomic problems&quot;\n     Annual Eugenics, 7, Part II, 179-188 (1936); also in &quot;Contributions to\n     Mathematical Statistics&quot; (John Wiley, NY, 1950).\n   - Duda, R.O., &amp; Hart, P.E. (1973) Pattern Classification and Scene Analysis.\n     (Q327.D83) John Wiley &amp; Sons.  ISBN 0-471-22361-1.  See page 218.\n   - Dasarathy, B.V. (1980) &quot;Nosing Around the Neighborhood: A New System\n     Structure and Classification Rule for Recognition in Partially Exposed\n     Environments&quot;.  IEEE Transactions on Pattern Analysis and Machine\n     Intelligence, Vol. PAMI-2, No. 1, 67-71.\n   - Gates, G.W. (1972) &quot;The Reduced Nearest Neighbor Rule&quot;.  IEEE Transactions\n     on Information Theory, May 1972, 431-433.\n   - See also: 1988 MLC Proceedings, 54-64.  Cheeseman et al&quot;s AUTOCLASS II\n     conceptual clustering system finds 3 classes in the data.\n   - Many, many more ...&#39;,
+<a id="__codelineno-1-161" name="__codelineno-1-161" href="#__codelineno-1-161"></a> &#39;feature_names&#39;: [&#39;sepal length (cm)&#39;,
+<a id="__codelineno-1-162" name="__codelineno-1-162" href="#__codelineno-1-162"></a>  &#39;sepal width (cm)&#39;,
+<a id="__codelineno-1-163" name="__codelineno-1-163" href="#__codelineno-1-163"></a>  &#39;petal length (cm)&#39;,
+<a id="__codelineno-1-164" name="__codelineno-1-164" href="#__codelineno-1-164"></a>  &#39;petal width (cm)&#39;],
+<a id="__codelineno-1-165" name="__codelineno-1-165" href="#__codelineno-1-165"></a> &#39;filename&#39;: &#39;/usr/local/lib/python3.8/dist-packages/sklearn/datasets/data/iris.csv&#39;}
+</code></pre></div></p>
+<h4 id="iris">上面是iris具体的数据格式</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>   classes = np.unique(y)
+</code></pre></div>
+<h4 id="ytarget">这句话的作用是提取出所有的类别标签，y由于对应的是target变量，也就是分类的目标。<br/></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a> # Number of samples and features
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    num_samples, num_features = X.shape
+</code></pre></div>
+<h4 id="xshape">X.shape最终返回的是:<br/></h4>
+<p><img alt="LDA" src="../images/shape.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>  # Mean vector
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    mean_total = np.mean(X, axis=0)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    # Within-class scatter matrix
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    Sw = np.zeros((num_features, num_features))
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    for i in classes:
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        Xi = X[y == i]
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        mean_Xi = np.mean(Xi, axis=0)
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>        Swi = np.cov(Xi.T, bias=True)
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        Sw += Swi
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    # Between-class scatter matrix
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    Sb = np.zeros((num_features, num_features))
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    for i in classes:
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>        Xi = X[y == i]
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>        mean_Xi = np.mean(Xi, axis=0)
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>        Ni = Xi.shape[0]
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>        mean_diff = mean_Xi - mean_total
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>        Sb += Ni * np.outer(mean_diff, mean_diff)
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    # Solve the generalized eigenvalue problem for the matrix Sw^-1 * Sb
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    # to get the eigenvalues and eigenvectors
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    eigenvalues, eigenvectors = np.linalg.eigh(np.linalg.inv(Sw).dot(Sb))
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>    # Sort the eigenvectors by decreasing eigenvalues
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>    sorted_indices = np.argsort(eigenvalues)[::-1]
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>    eigenvalues = eigenvalues[sorted_indices]
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>    eigenvectors = eigenvectors[:, sorted_indices]
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>    # Select the first num_components eigenvectors
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>    eigenvectors = eigenvectors[:, :num_components]
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>    # Transform the data
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a>    X_transformed = X.dot(eigenvectors)
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>    return X_transformed
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a># Test the LDA function
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>from sklearn import datasets
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>iris = datasets.load_iris()
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>X = iris.data
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>y = iris.target
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a># Apply LDA and reduce to 2 dimensions
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>X_lda = lda(X, y, 2)
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a>X_lda.shape
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a>import matplotlib.pyplot as plt
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a># Plot the LDA-transformed data
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a>plt.figure(figsize=(10, 8))
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a>for i, label in enumerate(iris.target_names):
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a>    plt.scatter(X_lda[y == i, 0], X_lda[y == i, 1], label=label)
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a>
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a>plt.xlabel(&#39;LD1&#39;)
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a>plt.ylabel(&#39;LD2&#39;)
+<a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a>plt.title(&#39;LDA of IRIS dataset&#39;)
+<a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a>plt.legend()
+<a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>plt.show()
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+    
+  </body>
+</html>
