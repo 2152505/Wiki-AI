@@ -1,0 +1,17 @@
+首先打开树莓派的命令行，输入：
+
+sudo nano /etc/dhcpcd.conf
+
+在文件的末尾加入：
+
+①若是网线连接，加入下面语句：
+interface eth0
+static ip_address=192.168.0.10/24   # 静态IP设置为了192.168.0.10
+static routers=192.168.0.1
+static domain_name_servers=8.8.8.8
+
+②若是WiFi连接，加入下面语句：
+interface wlan0
+static ip_address=192.168.0.200/24   # 静态IP设置为了192.168.0.200
+static routers=192.168.0.1
+static domain_name_servers=8.8.8.8

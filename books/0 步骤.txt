@@ -1,0 +1,48 @@
+1、安装diskimg
+
+2、根据镜像，写入img。镜像有2种，一种是32位的，一种是64位的。32位的系统以后下载python安装包都以armv7l.whl结尾；64位的以aarch64.whl结尾。
+
+3、打开手机热点，id和密码不要用中文字符
+
+4、编辑 7.开机配置文件 \wpa_supplicant.conf，修改网络ssid和密码，让其能连接手机热点
+
+5、把目录7下的软件拷贝到名字为boot的磁盘根目录
+
+6、重启，找到树莓派的ip地址（要么通过热点管理软件，要么用 6.辅助软件里面的ip扫描6）
+
+7、安装MobaXterm 账号：pi  密码：raspberry。https://mobaxterm.mobatek.net/download-home-edition.html 如果要修改树莓派的分辨率，可以在终端运行 sudo raspi-config 进入Interface Options 操作，打开vnc。
+
+8、安装vncviewer。用户和密码不变：账号：pi  密码：raspberry
+
+1、更新源（选）：然后用mobaxterm上传 2.开发环境\sources.txt，raspi.list.txt，修改如下文件内容，必须增加权限
+编辑 /etc/apt/sources.list 文件（软件源）
+编辑 /etc/apt/sources.list.d/raspi.list
+逐步更新一下
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+sudo rpi-update
+如果没有公钥：
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys  E77FC0EC34276B4B
+
+更换pip源
+
+2、ssh登录树莓派：做如下修改
+强制启用hdmi
+修改 config.txt 文件: sudo nano /boot/config.txt
+# uncomment if hdmi display is not detected and composite is being output
+hdmi_force_hotplug=1
+
+# uncomment to force a specific HDMI mode (this will force VGA)
+hdmi_group=2
+hdmi_drive=2
+hdmi_mode=82
+
+其中, 关于 hdmi_group 和 hdmi_mode 可以参考 树莓派 设置HDMI分辨率
+
+3、中文输入法
+安装中文字库和中文输入法
+# 安装中文字库
+sudo apt-get install fonts-wqy-zenhei
+# 安装中文输入法fcitx及Google拼音输入法
+sudo apt-get install fcitx fcitx-googlepinyin fcitx-module-cloudpinyin fcitx-sunpinyin

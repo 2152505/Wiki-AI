@@ -1,0 +1,1 @@
+![model](./images/mnist_model.jpeg)

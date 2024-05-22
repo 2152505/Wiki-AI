@@ -1,0 +1,74 @@
+dev_addr: "127.0.0.1:8080"
+site_name: My Docs
+nav:
+  - 共产党宣言: index.md
+  - 人工智能论文: 
+      - 课程总结: index2.md
+      - 模拟教室突然安静: ./AI/moni.md
+      - 两种拟合方式:
+        - 拉格朗日插值公式: ./AI/near.md
+        - 牛顿插值公式: ./AI/near2.md
+      - Pythia:A Suite for Analyzing Large Language Models Across Training and Scalin: ./AI/Phyia.md
+  - 基础操作汇总:
+      - 好用的工具: tools.md
+      - Pandoc使用: pandoc.md
+      - Python多行注释: operate.md
+      - super函数解析: super.md
+  - linux 学习:
+      - 文件目录: linux.md
+      - linux权限管理: linux_power.md
+      - linux网络学习: linux_net.md
+      - linux用户管理: linux_user.md
+  - ai学习:
+      - ngrok内网穿透: ngrok.md
+      - 树莓pi:
+          - 设置网络: pi.md
+          - ssh链接树莓pi: pi_2.md
+          - vnc可视化服务: pi_3.md
+          - 改变树莓pi默认账户: pi_4.md
+          - linux相关命令: pi_5.md
+          - 树莓服务器cpolar: pi_6.md
+          - 相关总结: pi_7.md
+      - mnist:
+          - mnist torch.nn: mnist_torch_nn.md
+          - mnist model: mnist_data.md
+          - 示例代码: demo_code.md
+      - 机器学习:
+          - 入门基础:
+              - 感知机: ml5.md
+              - 激活函数: ml6.md
+              - 误差反向传播: reforcast.md
+              - SGD与Momentum: SGD.md
+          - 课程评分: machinelearning.md
+          - 机器学习概率视角: ML3.md
+          - 变分推理: varinfer.md
+          - LDA原理: machinelearning02.md
+          - 支持向量机SVM: ml4.md
+          - Others: ml7.md
+          - GNN:
+            - 图神经网络基础知识: ./GNN/GNN1.md
+            - 用networkX可视化图: ./GNN/GNN2.md
+            - 理解图神经网络和信息传递机制: ./GNN/GNN3.md
+      - 图像处理和机器视觉:
+          - 配置环境: CV.md
+          - Eigen学习: eigen.md
+          - 高等代数基础SVD分解: SVD.md
+          - 对极几何: ./ML/oppAlg.md
+          - 八点法计算基本矩阵: ./ML/EightPoint.md
+          - 由本质矩阵回复相机运动: ./ML/Matirx.md
+          - 点的三角化: ./ML/Tranigle.md
+          - 实际操作: CV2.md
+  - SQL学习:
+      - SQLhm.md
+  - 脑科学导论:
+      - lesson01: lesson01.md
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+theme:
+  name: "material"
+  features:
+    - content.code.annotate
